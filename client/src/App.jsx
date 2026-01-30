@@ -16,7 +16,7 @@ function App() {
   const [refreshList, setRefreshList] = useState(0)
   const [activeTab, setActiveTab] = useState('my-requests')
   const [view, setView] = useState('landing') // 'landing', 'login', 'dashboard'
-  const [stats, setStats] = useState({ approved: 0, pending: 0 })
+  const [stats, setStats] = useState({ approved: 0, pending: 0, usedDays: 0 })
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -63,13 +63,23 @@ function App() {
     try {
       const { data, error } = await supabase
         .from('LeaveRequests')
-        .select('status')
+        .select('status, start_date, end_date')
         .eq('user_id', userId)
 
       if (data) {
-        const approved = data.filter(r => r.status === 'Approved').length
+        const approvedReqs = data.filter(r => r.status === 'Approved')
+        const approved = approvedReqs.length
         const pending = data.filter(r => r.status === 'Pending').length
-        setStats({ approved, pending })
+
+        const usedDays = approvedReqs.reduce((acc, req) => {
+          const start = new Date(req.start_date)
+          const end = new Date(req.end_date)
+          const diffTime = Math.abs(end - start)
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1
+          return acc + diffDays
+        }, 0)
+
+        setStats({ approved, pending, usedDays })
       }
     } catch (err) { console.error('Stats fetch failed', err) }
   }
@@ -274,7 +284,7 @@ function App() {
                     </div>
                     <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1 font-display">Leave Balance</h3>
                     <p className="text-4xl font-black text-slate-900 leading-none">
-                      {profile?.leaveBalance || 20} <span className="text-base font-bold text-slate-400">Days</span>
+                      {(profile?.leaveBalance || 30) - stats.usedDays} <span className="text-base font-bold text-slate-400">Days</span>
                     </p>
                   </div>
                 </div>
