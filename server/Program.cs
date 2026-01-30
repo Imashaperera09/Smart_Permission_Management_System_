@@ -32,12 +32,35 @@ builder.Services.AddCors(options =>
         });
 });
 
+// Use Render's dynamic port or default to 8080
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 var app = builder.Build();
 
+// Global Exception Handler to capture 500s and return with CORS
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+        await context.Response.WriteAsJsonAsync(new { 
+            Status = "Critical Error", 
+            Message = ex.Message,
+            Type = ex.GetType().Name
+        });
+    }
+});
+
 // Health check endpoints
-app.MapGet("/", () => "API is Running!");
-app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Version = "1.1" }));
-app.MapGet("/api/health", () => Results.Ok(new { Status = "Healthy", Location = "api/health" }));
+app.MapGet("/", () => "Smart Leave API is LIVE!");
+app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Version = "1.2" }));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -46,9 +69,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-Console.WriteLine($"Starting API... Base URL: {supabaseUrl}");
+Console.WriteLine($"API STARTING on Port: {port}. Supabase: {supabaseUrl}");
 
-// Explicitly ensure CORS is the very first middleware
 app.UseCors("AllowAll");
 app.UseAuthorization();
 
