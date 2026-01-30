@@ -12,7 +12,7 @@ function App() {
   const [showForm, setShowForm] = useState(false)
   const [refreshList, setRefreshList] = useState(0)
   const [activeTab, setActiveTab] = useState('my-requests')
-  const [view, setView] = useState('home') // 'home', 'login'
+  const [view, setView] = useState('landing') // 'landing', 'login', 'dashboard'
   const [stats, setStats] = useState({ approved: 0, pending: 0 })
 
   useEffect(() => {
@@ -21,7 +21,7 @@ function App() {
       if (session) {
         fetchProfile(session.user.id)
         fetchStats(session.user.id)
-        setView('home')
+        setView('dashboard')
       }
     })
 
@@ -32,7 +32,7 @@ function App() {
       if (session) {
         fetchProfile(session.user.id)
         fetchStats(session.user.id)
-        setView('home')
+        setView('dashboard')
       } else {
         setProfile(null)
       }
@@ -75,10 +75,10 @@ function App() {
     return (
       <div className="relative">
         <button
-          onClick={() => setView('home')}
-          className="absolute top-8 left-8 z-50 text-white bg-black/20 hover:bg-black/40 px-4 py-2 rounded-xl font-bold backdrop-blur-md transition-all"
+          onClick={() => setView('landing')}
+          className="absolute top-8 left-8 z-50 text-white bg-black/20 hover:bg-black/40 px-4 py-2 rounded-xl font-bold backdrop-blur-md transition-all cursor-pointer"
         >
-          ← Back to Home
+          ← Back to Landing
         </button>
         <Login />
       </div>
@@ -93,8 +93,11 @@ function App() {
       {/* Premium Navbar */}
       <nav className="bg-white/80 backdrop-blur-md border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary-600 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg shadow-primary-500/20 transform -rotate-3">S</div>
+          <div
+            className="flex items-center gap-3 cursor-pointer group"
+            onClick={() => setView('landing')}
+          >
+            <div className="w-10 h-10 bg-primary-600 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg shadow-primary-500/20 transform -rotate-3 group-hover:rotate-0 transition-transform">S</div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-900 bg-clip-text text-transparent font-display">Smart Leave</h1>
           </div>
           <div className="flex items-center gap-6">
@@ -107,7 +110,19 @@ function App() {
               </button>
             ) : (
               <div className="flex items-center gap-6">
-                <div className="hidden md:flex flex-col items-end border-r pr-6">
+                <button
+                  onClick={() => setView('landing')}
+                  className={`text-sm font-bold transition-colors ${view === 'landing' ? 'text-primary-600' : 'text-slate-500 hover:text-slate-900'}`}
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => setView('dashboard')}
+                  className={`text-sm font-bold transition-colors ${view === 'dashboard' ? 'text-primary-600' : 'text-slate-500 hover:text-slate-900'}`}
+                >
+                  Dashboard
+                </button>
+                <div className="hidden md:flex flex-col items-end border-l pl-6 border-r pr-6">
                   <span className="text-sm font-bold text-slate-900">{profile?.fullName || session.user.email}</span>
                   <span className="text-xs font-medium text-slate-400">{userRole}</span>
                 </div>
@@ -124,12 +139,9 @@ function App() {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full flex-grow">
-        {!session ? (
+        {(view === 'landing' || !session) ? (
           /* Public Landing View */
           <div className="flex flex-col items-center text-center py-20 px-4">
-            <div className="w-24 h-24 bg-primary-100 rounded-[2.5rem] flex items-center justify-center text-primary-600 mb-10 animate-float shadow-inner">
-              <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-            </div>
             <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 mb-6 tracking-tight font-display">
               Simplify Your <br /> <span className="text-primary-600">Leave Management</span>
             </h1>
@@ -137,12 +149,24 @@ function App() {
               The modern way to track, request, and approve leaves. Real-time balance updates, seamless communication, and smart conflict detection.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                onClick={() => setView('login')}
-                className="px-10 py-5 bg-primary-600 text-white rounded-[1.5rem] font-bold text-lg shadow-2xl shadow-primary-500/30 hover:bg-primary-700 hover:-translate-y-1 transition-all"
-              >
-                Get Started Now
-              </button>
+              {!session ? (
+                <button
+                  onClick={() => setView('login')}
+                  className="px-10 py-5 bg-primary-600 text-white rounded-[1.5rem] font-bold text-lg shadow-2xl shadow-primary-500/30 hover:bg-primary-700 hover:-translate-y-1 transition-all"
+                >
+                  Get Started Now
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setView('dashboard')
+                    setShowForm(true)
+                  }}
+                  className="px-10 py-5 bg-primary-600 text-white rounded-[1.5rem] font-bold text-lg shadow-2xl shadow-primary-500/30 hover:bg-primary-700 hover:-translate-y-1 transition-all"
+                >
+                  Apply for Leave
+                </button>
+              )}
               <div className="px-10 py-5 bg-white text-slate-900 border border-slate-200 rounded-[1.5rem] font-bold text-lg shadow-sm">
                 Learn More
               </div>
