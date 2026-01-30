@@ -1,0 +1,6 @@
+@SmartLeave.Api_HostAddress = http://localhost:5192
+
+GET {{SmartLeave.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
