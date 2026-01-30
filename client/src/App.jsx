@@ -4,12 +4,14 @@ import Login from './components/Login'
 import LeaveRequestForm from './components/LeaveRequestForm'
 import LeaveRequestList from './components/LeaveRequestList'
 import ManagerApprovalList from './components/ManagerApprovalList'
+import OfficeRulesModal from './components/OfficeRulesModal'
 
 function App() {
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
   const [roles, setRoles] = useState([])
   const [showForm, setShowForm] = useState(false)
+  const [showRules, setShowRules] = useState(false)
   const [refreshList, setRefreshList] = useState(0)
   const [activeTab, setActiveTab] = useState('my-requests')
   const [view, setView] = useState('landing') // 'landing', 'login', 'dashboard'
@@ -167,9 +169,12 @@ function App() {
                   Apply for Leave
                 </button>
               )}
-              <div className="px-10 py-5 bg-white text-slate-900 border border-slate-200 rounded-[1.5rem] font-bold text-lg shadow-sm">
+              <button
+                onClick={() => setShowRules(true)}
+                className="px-10 py-5 bg-white text-slate-900 border border-slate-200 rounded-[1.5rem] font-bold text-lg shadow-sm hover:bg-slate-50 transition-all"
+              >
                 Learn More
-              </div>
+              </button>
             </div>
 
             <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-10 w-full max-w-6xl">
@@ -326,6 +331,11 @@ function App() {
           </>
         )}
       </main>
+
+      <OfficeRulesModal
+        isOpen={showRules}
+        onClose={() => setShowRules(false)}
+      />
 
       <footer className="bg-slate-950 py-16 mt-20 relative overflow-hidden">
         {/* Subtle decorative background circle */}
