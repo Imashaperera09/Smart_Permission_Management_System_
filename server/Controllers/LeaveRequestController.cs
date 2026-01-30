@@ -120,10 +120,22 @@ namespace SmartLeave.Api.Controllers
         }
 
         [HttpGet("roles")]
-        public async Task<ActionResult<IEnumerable<Role>>> GetRoles()
+        public async Task<ActionResult> GetRoles()
         {
-            var response = await _supabaseClient.From<Role>().Get();
-            return Ok(response.Models);
+            try 
+            {
+                var response = await _supabaseClient.From<Role>().Get();
+                return Ok(response.Models);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { 
+                    Message = "Supabase query failed", 
+                    Error = ex.Message,
+                    Details = ex.StackTrace,
+                    Source = ex.Source
+                });
+            }
         }
     }
 }
