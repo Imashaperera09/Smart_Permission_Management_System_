@@ -10,6 +10,7 @@ import AdminPanel from './components/AdminPanel'
 import AdminAuth from './components/AdminAuth'
 
 function App() {
+  // Deployment sync: Backend CORS fix applied
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
   const [roles, setRoles] = useState([])
