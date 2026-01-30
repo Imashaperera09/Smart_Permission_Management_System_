@@ -31,16 +31,16 @@ High-level overview of the system components and data flow:
 
 ```mermaid
 graph TD
-    User[User (Browser)] -->|HTTPS| Client[React Client (Vite)]
-    Client -->|REST API| API[.NET Core Web API]
-    Client -->|Auth| SupabaseAuth[Supabase Auth]
-    API -->|Query/Update| DB[(Supabase PostgreSQL)]
+    User["User (Browser)"] -->|"HTTPS"| Client["React Client (Vite)"]
+    Client -->|"REST API"| API[".NET Core Web API"]
+    Client -->|"Auth"| SupabaseAuth["Supabase Auth"]
+    API -->|"Query/Update"| DB[("Supabase PostgreSQL")]
     
     subgraph Frontend
     Client
     end
     
-    subgraph Backend Services
+    subgraph "Backend Services"
     API
     SupabaseAuth
     DB
