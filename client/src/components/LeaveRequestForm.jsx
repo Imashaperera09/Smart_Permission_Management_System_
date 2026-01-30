@@ -27,19 +27,19 @@ export default function LeaveRequestForm({ onComplete }) {
         const { data: { user } } = await supabase.auth.getUser()
 
         try {
-            const response = await fetch('https://localhost:7066/api/LeaveRequest', {
+            const response = await fetch('http://localhost:5192/api/LeaveRequest', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    userId: user.id,
-                    leaveTypeId: formData.leave_type_id,
-                    startDate: formData.start_date,
-                    endDate: formData.end_date,
-                    reason: formData.reason,
-                    status: 'Pending',
-                    createdAt: new Date().toISOString()
+                    UserId: user.id,
+                    LeaveTypeId: formData.leave_type_id,
+                    StartDate: formData.start_date,
+                    EndDate: formData.end_date,
+                    Reason: formData.reason,
+                    Status: 'Pending',
+                    CreatedAt: new Date().toISOString()
                 })
             })
 

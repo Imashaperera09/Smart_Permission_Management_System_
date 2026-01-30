@@ -11,7 +11,7 @@ export default function ManagerApprovalList() {
 
     const fetchPendingRequests = async () => {
         try {
-            const response = await fetch('https://localhost:7066/api/LeaveRequest/all')
+            const response = await fetch('http://localhost:5192/api/LeaveRequest/all')
             if (response.ok) {
                 const data = await response.json()
                 setRequests(data)
@@ -25,7 +25,7 @@ export default function ManagerApprovalList() {
 
     const handleAction = async (id, action) => {
         try {
-            const response = await fetch(`https://localhost:7066/api/LeaveRequest/${action}/${id}`, {
+            const response = await fetch(`http://localhost:5192/api/LeaveRequest/${action}/${id}`, {
                 method: 'POST'
             })
             if (response.ok) {
