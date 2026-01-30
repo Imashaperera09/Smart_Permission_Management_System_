@@ -56,7 +56,7 @@ export default function LeaveRequestForm({ onComplete }) {
                 medicalUrl = await handleFileUpload()
             }
 
-            const response = await fetch('http://localhost:5192/api/LeaveRequest', {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/LeaveRequest`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -51,7 +51,7 @@ function App() {
 
   const fetchRoles = async () => {
     try {
-      const res = await fetch('http://localhost:5192/api/Profile/roles')
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Profile/roles`)
       if (res.ok) {
         setRoles(await res.json())
       } else {
@@ -68,7 +68,7 @@ function App() {
   const fetchProfile = async (userId) => {
     try {
       // 1. Try backend first
-      const res = await fetch(`http://localhost:5192/api/Profile/${userId}`)
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Profile/${userId}`)
       if (res.ok) {
         const data = await res.json()
         setProfile(data)
