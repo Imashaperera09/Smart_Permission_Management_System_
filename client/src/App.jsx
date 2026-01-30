@@ -167,62 +167,114 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* Premium Navbar */}
-      <nav className="bg-white/80 backdrop-blur-md border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
-          <div
-            className="flex items-center gap-3 cursor-pointer group"
-            onClick={() => setView('landing')}
-          >
-            <div className="w-10 h-10 bg-primary-600 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg shadow-primary-500/20 transform -rotate-3 group-hover:rotate-0 transition-transform">S</div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-900 bg-clip-text text-transparent font-display">Smart Leave</h1>
-          </div>
-          <div className="flex items-center gap-6">
-            {!session ? (
+      {/* Navigation Bar - Swaps based on View */}
+      {view === 'admin' ? (
+        /* ADMIN NAVBAR */
+        <nav className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 text-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center text-slate-900 font-bold shadow-lg">A</div>
+              <h1 className="text-xl font-bold font-display tracking-tight">Admin Console</h1>
+            </div>
+            <div className="flex items-center gap-6">
               <button
-                onClick={() => setView('login')}
-                className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-primary-500/20 hover:bg-primary-700 hover:shadow-primary-500/40 transition-all active:scale-95"
+                onClick={() => setView('landing')}
+                className="text-sm font-bold text-slate-400 hover:text-white transition-colors"
               >
-                Sign In
+                Exit to Home
               </button>
-            ) : (
-              <div className="flex items-center gap-6">
-                <button
-                  onClick={() => setView('landing')}
-                  className={`text-sm font-bold transition-colors ${view === 'landing' ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
-                >
-                  Home
-                </button>
-                {userRole !== 'Admin' && (
-                  <button
-                    onClick={() => setView('dashboard')}
-                    className={`text-sm font-bold transition-colors ${view === 'dashboard' ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
-                  >
-                    My Portal
-                  </button>
-                )}
-                {userRole === 'Admin' && (
-                  <button
-                    onClick={() => setView('admin')}
-                    className={`text-sm font-bold transition-colors ${view === 'admin' ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
-                  >
-                    Admin Control
-                  </button>
-                )}
-                <div className="hidden md:flex flex-col items-end border-l pl-6 border-r pr-6">
-                  <span className="text-sm font-bold text-slate-900">{profile?.fullName || session.user.email}</span>
-                  <span className="text-xs font-medium text-slate-500">{userRole}</span>
+              <div className="h-6 w-px bg-slate-800"></div>
+              <div className="flex items-center gap-3">
+                <div className="text-right hidden md:block">
+                  <span className="block text-sm font-bold text-white">{profile?.fullName || 'Administrator'}</span>
+                  <span className="block text-xs font-medium text-slate-500">System Admin</span>
                 </div>
                 <button
                   onClick={() => supabase.auth.signOut()}
-                  className="px-4 py-2 text-slate-600 hover:text-red-500 font-semibold transition-colors text-sm"
+                  className="px-4 py-2 bg-slate-800 hover:bg-red-600/20 text-slate-300 hover:text-red-500 rounded-lg font-bold text-xs uppercase tracking-widest transition-all"
                 >
                   Sign Out
                 </button>
               </div>
-            )}
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      ) : (
+        /* USER/PUBLIC NAVBAR */
+        <nav className="bg-white/80 backdrop-blur-md border-b sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+            <div
+              className="flex items-center gap-3 cursor-pointer group"
+              onClick={() => setView('landing')}
+            >
+              <div className="w-10 h-10 bg-primary-600 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg shadow-primary-500/20 transform -rotate-3 group-hover:rotate-0 transition-transform">S</div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-900 bg-clip-text text-transparent font-display">Smart Leave</h1>
+            </div>
+            <div className="flex items-center gap-6">
+              {!session ? (
+                <button
+                  onClick={() => setView('login')}
+                  className="bg-primary-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-primary-500/20 hover:bg-primary-700 hover:shadow-primary-500/40 transition-all active:scale-95"
+                >
+                  Sign In
+                </button>
+              ) : (
+                <div className="flex items-center gap-6">
+                  <button
+                    onClick={() => setView('landing')}
+                    className={`text-sm font-bold transition-colors ${view === 'landing' ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
+                  >
+                    Home
+                  </button>
+
+                  {/* User Navigation Links */}
+                  <button
+                    onClick={() => { setView('dashboard'); setActiveTab('my-requests') }}
+                    className={`text-sm font-bold transition-colors ${view === 'dashboard' && activeTab === 'my-requests' ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
+                  >
+                    My Portal
+                  </button>
+                  <button
+                    onClick={() => { setView('dashboard'); setActiveTab('medicals') }}
+                    className={`text-sm font-bold transition-colors ${view === 'dashboard' && activeTab === 'medicals' ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
+                  >
+                    Medicals
+                  </button>
+                  {isManager && (
+                    <button
+                      onClick={() => { setView('dashboard'); setActiveTab('approvals') }}
+                      className={`text-sm font-bold transition-colors ${view === 'dashboard' && activeTab === 'approvals' ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
+                    >
+                      Approvals
+                    </button>
+                  )}
+
+                  {/* Admin Entry Point (Only for Admins, creates separation) */}
+                  {userRole === 'Admin' && (
+                    <button
+                      onClick={() => setView('admin')}
+                      className="ml-4 px-4 py-2 bg-slate-900 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/20"
+                    >
+                      Admin Panel
+                    </button>
+                  )}
+
+                  <div className="hidden md:flex flex-col items-end border-l pl-6 border-r pr-6">
+                    <span className="text-sm font-bold text-slate-900">{profile?.fullName || session.user.email}</span>
+                    <span className="text-xs font-medium text-slate-500">{userRole}</span>
+                  </div>
+                  <button
+                    onClick={() => supabase.auth.signOut()}
+                    className="px-4 py-2 text-slate-600 hover:text-red-500 font-semibold transition-colors text-sm"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </nav>
+      )}
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full flex-grow">
         {(view === 'landing' || !session) ? (
@@ -299,9 +351,24 @@ function App() {
               ))}
             </div>
           </div>
-        ) : (profile && userRole === 'Admin' && view !== 'dashboard') ? (
-          /* Authenticated Admin View - Only if explicitly not on dashboard */
-          <AdminPanel />
+        ) : (userRole === 'Admin') ? (
+          /* Authenticated Admin View */
+          showForm ? (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="flex justify-between items-center mb-10">
+                <h2 className="text-3xl font-black text-slate-900">New Leave Application</h2>
+                <button
+                  onClick={() => setShowForm(false)}
+                  className="px-6 py-2 bg-slate-900 text-white rounded-xl font-bold text-sm hover:scale-105 transition-all"
+                >
+                  ← Back to Admin Control
+                </button>
+              </div>
+              <LeaveRequestForm />
+            </div>
+          ) : (
+            <AdminPanel />
+          )
         ) : (!profile && session) ? (
           /* Loading State while profile fetches */
           <div className="flex flex-col items-center justify-center py-32 px-4 italic text-slate-400 font-bold animate-pulse">

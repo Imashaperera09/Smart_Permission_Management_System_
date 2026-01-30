@@ -70,6 +70,7 @@ export default function AdminPanel() {
 
         await fetchAdminData()
         setActionLoading(null)
+
     }
 
     if (loading) return (
@@ -78,6 +79,47 @@ export default function AdminPanel() {
             <p className="text-slate-500 font-bold animate-pulse">Initializing Admin Workspace...</p>
         </div>
     )
+
+    const handleUpdatePolicy = async (typeId, currentMax) => {
+        const newMax = prompt('Enter new maximum days for this leave type:', currentMax)
+        if (newMax === null || isNaN(newMax)) return
+
+        setActionLoading(typeId)
+        const { error } = await supabase
+            .from('LeaveTypes')
+            .update({ max_days: parseInt(newMax) })
+            .eq('id', typeId)
+
+        if (error) alert(error.message)
+        else fetchAdminData()
+        setActionLoading(null)
+    }
+
+    const handleDeletePolicy = async (typeId) => {
+        if (!confirm('Are you sure you want to delete this leave type? This may affect existing requests.')) return
+
+        setActionLoading(typeId)
+        const { error } = await supabase.from('LeaveTypes').delete().eq('id', typeId)
+
+        if (error) alert(error.message)
+        else fetchAdminData()
+        setActionLoading(null)
+    }
+
+    const handleAddType = async () => {
+        const name = prompt('Enter name for the new leave type:')
+        if (!name) return
+        const max = prompt('Enter maximum days allocation:')
+        if (!max || isNaN(max)) return
+
+        const { error } = await supabase.from('LeaveTypes').insert({
+            name,
+            max_days: parseInt(max)
+        })
+
+        if (error) alert(error.message)
+        else fetchAdminData()
+    }
 
     return (
         <div className="flex flex-col lg:flex-row gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -204,9 +246,17 @@ export default function AdminPanel() {
                                             </span>
                                         )}
                                         {req.medical_url && (
-                                            <a href={req.medical_url} target="_blank" className="p-3 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-primary-600 shadow-sm transition-all" title="View Medical Report">
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
-                                            </a>
+                                            <div className="relative group/med">
+                                                <a href={req.medical_url} target="_blank" className="block w-12 h-12 rounded-xl overflow-hidden border border-slate-200 shadow-sm hover:scale-110 transition-all">
+                                                    {req.medical_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                                                        <img src={req.medical_url} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400">
+                                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                                        </div>
+                                                    )}
+                                                </a>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -227,10 +277,18 @@ export default function AdminPanel() {
                             {medicals.map(doc => (
                                 <div key={doc.id} className="p-8 bg-slate-50 rounded-[3rem] border border-slate-100 group hover:bg-white hover:shadow-2xl transition-all duration-700">
                                     <div className="w-full h-40 bg-slate-200 rounded-[2rem] mb-6 overflow-hidden relative">
+                                        {doc.document_url?.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                                            <img
+                                                src={doc.document_url}
+                                                alt="Medical Preview"
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                            />
+                                        ) : (
+                                            <svg className="w-12 h-12 text-slate-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                        )}
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <a href={doc.document_url} target="_blank" className="px-6 py-2 bg-white rounded-xl font-bold text-xs uppercase tracking-widest">Open Document</a>
+                                            <a href={doc.document_url} target="_blank" className="px-6 py-2 bg-white rounded-xl font-bold text-xs uppercase tracking-widest">View Full Size</a>
                                         </div>
-                                        <svg className="w-12 h-12 text-slate-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                     </div>
                                     <h4 className="font-black text-slate-900 text-lg mb-1">{doc.document_name || 'Medical Certificate'}</h4>
                                     <p className="text-xs font-bold text-primary-600 mb-4 uppercase tracking-tighter">Submitter: {doc.Profiles?.full_name || 'Staff Member'}</p>
@@ -285,20 +343,34 @@ export default function AdminPanel() {
                     <div className="space-y-8 animate-in fade-in duration-500">
                         <div className="flex justify-between items-center">
                             <h2 className="text-3xl font-black text-slate-900 font-display">Leave Policies</h2>
-                            <button className="px-6 py-3 bg-primary-600 text-white rounded-xl font-bold shadow-lg hover:scale-105 transition-all text-sm">+ Add New Type</button>
+                            <button
+                                onClick={handleAddType}
+                                className="px-6 py-3 bg-primary-600 text-white rounded-xl font-bold shadow-lg hover:scale-105 transition-all text-sm font-display"
+                            >
+                                + Add New Type
+                            </button>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {leaveTypes.map(t => (
                                 <div key={t.id} className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 group hover:bg-white hover:shadow-2xl transition-all duration-500">
                                     <div className="flex justify-between items-start mb-6">
                                         <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary-600 shadow-sm font-black border border-slate-100">{t.name[0]}</div>
-                                        <button className="text-slate-400 hover:text-rose-500 transition-colors">
+                                        <button
+                                            onClick={() => handleDeletePolicy(t.id)}
+                                            className="text-slate-400 hover:text-rose-500 transition-colors"
+                                        >
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
                                     </div>
-                                    <h4 className="text-xl font-black text-slate-900 mb-1">{t.name}</h4>
+                                    <h4 className="text-xl font-black text-slate-900 mb-1 font-display">{t.name}</h4>
                                     <p className="text-slate-500 text-sm font-bold mb-4">Allowance: {t.max_days} Days / Year</p>
-                                    <button className="w-full py-3 bg-white text-slate-600 border border-slate-200 rounded-xl font-bold text-xs hover:bg-slate-900 hover:text-white transition-all uppercase tracking-widest">Update Policy</button>
+                                    <button
+                                        onClick={() => handleUpdatePolicy(t.id, t.max_days)}
+                                        disabled={actionLoading === t.id}
+                                        className="w-full py-3 bg-white text-slate-600 border border-slate-200 rounded-xl font-bold text-xs hover:bg-slate-900 hover:text-white transition-all uppercase tracking-widest font-display"
+                                    >
+                                        {actionLoading === t.id ? 'Updating...' : 'Update Policy'}
+                                    </button>
                                 </div>
                             ))}
                         </div>
