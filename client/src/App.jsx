@@ -313,7 +313,7 @@ function App() {
                 Learn More
               </button>
               <button
-                onClick={() => setView('admin-auth')}
+                onClick={() => userRole === 'Admin' ? setView('admin') : setView('admin-auth')}
                 className="px-10 py-5 bg-slate-900 text-white rounded-[1.5rem] font-bold text-lg shadow-2xl shadow-slate-900/20 hover:bg-slate-800 hover:-translate-y-1 transition-all font-display"
               >
                 Admin Workspace
