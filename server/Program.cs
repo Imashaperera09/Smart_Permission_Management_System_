@@ -41,7 +41,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// REMOVED app.UseHttpsRedirection() as it causes CORS issues on Render
 app.UseCors("AllowAll");
 app.UseAuthorization();
 
