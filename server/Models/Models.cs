@@ -68,6 +68,9 @@ namespace SmartLeave.Api.Models
         [Column("status")]
         public string Status { get; set; } = "Pending";
 
+        [Column("medical_url")]
+        public string? MedicalUrl { get; set; }
+
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
     }

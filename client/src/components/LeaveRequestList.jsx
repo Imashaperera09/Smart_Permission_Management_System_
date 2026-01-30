@@ -98,9 +98,22 @@ export default function LeaveRequestList() {
                                     <td className="px-10 py-8">
                                         <div className="flex items-center gap-4">
                                             <div className={`w-3 h-3 rounded-full ring-4 ring-offset-4 ring-transparent group-hover:ring-primary-100 transition-all ${req.LeaveTypes?.name.includes('Sick') ? 'bg-rose-400' :
-                                                req.LeaveTypes?.name.includes('Annual') ? 'bg-emerald-400' : 'bg-primary-400'
+                                                    req.LeaveTypes?.name.includes('Annual') ? 'bg-emerald-400' : 'bg-primary-400'
                                                 }`}></div>
-                                            <span className="text-lg font-bold text-slate-800 group-hover:text-primary-700 transition-colors capitalize">{req.LeaveTypes?.name.toLowerCase()}</span>
+                                            <div className="flex flex-col">
+                                                <span className="text-lg font-bold text-slate-800 group-hover:text-primary-700 transition-colors capitalize">{req.LeaveTypes?.name.toLowerCase()}</span>
+                                                {req.medical_url && (
+                                                    <a
+                                                        href={req.medical_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:text-rose-700 mt-1 transition-colors group/link"
+                                                    >
+                                                        <svg className="w-3 h-3 group-hover/link:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a11 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                                        Medical Attachment
+                                                    </a>
+                                                )}
+                                            </div>
                                         </div>
                                     </td>
                                     <td className="px-10 py-8">

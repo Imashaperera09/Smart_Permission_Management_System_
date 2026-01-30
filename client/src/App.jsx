@@ -5,6 +5,7 @@ import LeaveRequestForm from './components/LeaveRequestForm'
 import LeaveRequestList from './components/LeaveRequestList'
 import ManagerApprovalList from './components/ManagerApprovalList'
 import OfficeRulesModal from './components/OfficeRulesModal'
+import MedicalRecords from './components/MedicalRecords'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -217,22 +218,28 @@ function App() {
                 <p className="text-slate-600 text-lg">Hello {profile?.fullName || 'there'}, ready to manage your time?</p>
               </div>
               <div className="flex items-center gap-3">
-                {isManager && (
-                  <div className="flex bg-slate-200/50 p-1.5 rounded-2xl">
-                    <button
-                      onClick={() => setActiveTab('my-requests')}
-                      className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'my-requests' ? 'bg-white shadow-md text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
-                    >
-                      My Portal
-                    </button>
+                <div className="flex bg-slate-200/50 p-1.5 rounded-2xl">
+                  <button
+                    onClick={() => setActiveTab('my-requests')}
+                    className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'my-requests' ? 'bg-white shadow-md text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
+                  >
+                    My Portal
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('medicals')}
+                    className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'medicals' ? 'bg-white shadow-md text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
+                  >
+                    Medicals
+                  </button>
+                  {isManager && (
                     <button
                       onClick={() => setActiveTab('approvals')}
                       className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'approvals' ? 'bg-white shadow-md text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
                     >
                       Approvals
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
                 <button
                   onClick={() => setShowForm(!showForm)}
                   className={`px-8 py-3 rounded-2xl font-bold transition-all shadow-xl cursor-pointer ${showForm
@@ -256,78 +263,79 @@ function App() {
               </div>
             )}
 
-            {activeTab === 'my-requests' ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-                  {/* Balance Card */}
-                  <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 group hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-500 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
-                    <div className="relative z-10">
-                      <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 mb-6 group-hover:rotate-12 transition-transform">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                      </div>
-                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1 font-display">Leave Balance</h3>
-                      <p className="text-4xl font-black text-slate-900 leading-none">
-                        {profile?.leaveBalance || 20} <span className="text-base font-bold text-slate-400">Days</span>
-                      </p>
+            {activeTab === 'my-requests' && (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                {/* Balance Card */}
+                <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 group hover:shadow-2xl hover:shadow-emerald-500/10 transition-all duration-500 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
+                  <div className="relative z-10">
+                    <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 mb-6 group-hover:rotate-12 transition-transform">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </div>
-                  </div>
-
-                  {/* Approved Stats Card */}
-                  <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 group hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
-                    <div className="relative z-10">
-                      <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mb-6 group-hover:rotate-12 transition-transform">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                      </div>
-                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1 font-display">Approved</h3>
-                      <p className="text-4xl font-black text-slate-900 leading-none">
-                        {stats.approved} <span className="text-base font-bold text-slate-400">Requests</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Pending Stats Card */}
-                  <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 group hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-500 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
-                    <div className="relative z-10">
-                      <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 mb-6 group-hover:rotate-12 transition-transform">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                      </div>
-                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1 font-display">Pending</h3>
-                      <p className="text-4xl font-black text-slate-900 leading-none">
-                        {stats.pending} <span className="text-base font-bold text-slate-400">Awaiting</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Profile/Role Status Card - Compact */}
-                  <div className="bg-gradient-to-br from-primary-600 to-primary-700 p-8 rounded-[2.5rem] text-white overflow-hidden relative group shadow-xl shadow-primary-500/20">
-                    <div className="absolute right-[-20px] top-[-20px] w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-1000"></div>
-                    <div className="relative z-10 flex flex-col h-full justify-between">
-                      <div>
-                        <h3 className="text-sm font-bold text-white/60 uppercase tracking-widest mb-2 font-display">Current Access</h3>
-                        <p className="text-3xl font-black text-white">{userRole} Portal</p>
-                      </div>
-                      <div className="mt-6 flex items-center gap-3 py-2 px-3 bg-white/10 rounded-xl border border-white/10 w-fit backdrop-blur-sm">
-                        <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center text-white">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"></path></svg>
-                        </div>
-                        <span className="text-xs font-semibold text-white/80">Account Verified</span>
-                      </div>
-                    </div>
+                    <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1 font-display">Leave Balance</h3>
+                    <p className="text-4xl font-black text-slate-900 leading-none">
+                      {profile?.leaveBalance || 20} <span className="text-base font-bold text-slate-400">Days</span>
+                    </p>
                   </div>
                 </div>
 
-                <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                  <LeaveRequestList key={refreshList} />
+                {/* Approved Stats Card */}
+                <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 group hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
+                  <div className="relative z-10">
+                    <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mb-6 group-hover:rotate-12 transition-transform">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1 font-display">Approved</h3>
+                    <p className="text-4xl font-black text-slate-900 leading-none">
+                      {stats.approved} <span className="text-base font-bold text-slate-400">Requests</span>
+                    </p>
+                  </div>
                 </div>
-              </>
-            ) : (
-              <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                <ManagerApprovalList />
+
+                {/* Pending Stats Card */}
+                <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 group hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-500 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-700"></div>
+                  <div className="relative z-10">
+                    <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 mb-6 group-hover:rotate-12 transition-transform">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1 font-display">Pending</h3>
+                    <p className="text-4xl font-black text-slate-900 leading-none">
+                      {stats.pending} <span className="text-base font-bold text-slate-400">Awaiting</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Profile/Role Status Card - Compact */}
+                <div className="bg-gradient-to-br from-primary-600 to-primary-700 p-8 rounded-[2.5rem] text-white overflow-hidden relative group shadow-xl shadow-primary-500/20">
+                  <div className="absolute right-[-20px] top-[-20px] w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all duration-1000"></div>
+                  <div className="relative z-10 flex flex-col h-full justify-between">
+                    <div>
+                      <h3 className="text-sm font-bold text-white/60 uppercase tracking-widest mb-2 font-display">Current Access</h3>
+                      <p className="text-3xl font-black text-white">{userRole} Portal</p>
+                    </div>
+                    <div className="mt-6 flex items-center gap-3 py-2 px-3 bg-white/10 rounded-xl border border-white/10 w-fit backdrop-blur-sm">
+                      <div className="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center text-white">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"></path></svg>
+                      </div>
+                      <span className="text-xs font-semibold text-white/80">Account Verified</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
+
+            {/* History Section */}
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+              {activeTab === 'my-requests' ? (
+                <LeaveRequestList key={refreshList} />
+              ) : activeTab === 'medicals' ? (
+                <MedicalRecords />
+              ) : (
+                <ManagerApprovalList />
+              )}
+            </div>
           </>
         )}
       </main>
