@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartLeave.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3e50d989848ce49af9f8624491e93155220cc448")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+72bd83963a96daadd50cbd5a5341ad86650dbf5b")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartLeave.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartLeave.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
