@@ -112,23 +112,23 @@ function App() {
               <div className="flex items-center gap-6">
                 <button
                   onClick={() => setView('landing')}
-                  className={`text-sm font-bold transition-colors ${view === 'landing' ? 'text-primary-600' : 'text-slate-500 hover:text-slate-900'}`}
+                  className={`text-sm font-bold transition-colors ${view === 'landing' ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
                 >
                   Home
                 </button>
                 <button
                   onClick={() => setView('dashboard')}
-                  className={`text-sm font-bold transition-colors ${view === 'dashboard' ? 'text-primary-600' : 'text-slate-500 hover:text-slate-900'}`}
+                  className={`text-sm font-bold transition-colors ${view === 'dashboard' ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
                 >
                   Dashboard
                 </button>
                 <div className="hidden md:flex flex-col items-end border-l pl-6 border-r pr-6">
                   <span className="text-sm font-bold text-slate-900">{profile?.fullName || session.user.email}</span>
-                  <span className="text-xs font-medium text-slate-400">{userRole}</span>
+                  <span className="text-xs font-medium text-slate-500">{userRole}</span>
                 </div>
                 <button
                   onClick={() => supabase.auth.signOut()}
-                  className="px-4 py-2 text-slate-500 hover:text-red-500 font-semibold transition-colors text-sm"
+                  className="px-4 py-2 text-slate-600 hover:text-red-500 font-semibold transition-colors text-sm"
                 >
                   Sign Out
                 </button>
@@ -145,7 +145,7 @@ function App() {
             <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 mb-6 tracking-tight font-display">
               Simplify Your <br /> <span className="text-primary-600">Leave Management</span>
             </h1>
-            <p className="text-slate-500 text-xl max-w-2xl mb-12 leading-relaxed">
+            <p className="text-slate-600 text-xl max-w-2xl mb-12 leading-relaxed">
               The modern way to track, request, and approve leaves. Real-time balance updates, seamless communication, and smart conflict detection.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -198,7 +198,7 @@ function App() {
                     <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">{f.icon}</svg>
                   </div>
                   <h3 className="text-2xl font-bold text-slate-900 mb-4 font-display">{f.title}</h3>
-                  <p className="text-slate-500 leading-relaxed font-medium">{f.desc}</p>
+                  <p className="text-slate-600 leading-relaxed font-medium">{f.desc}</p>
                 </div>
               ))}
             </div>
@@ -209,20 +209,20 @@ function App() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
               <div>
                 <h1 className="text-4xl font-extrabold text-slate-900 mb-2">My Workspace</h1>
-                <p className="text-slate-500 text-lg">Hello {profile?.fullName || 'there'}, ready to manage your time?</p>
+                <p className="text-slate-600 text-lg">Hello {profile?.fullName || 'there'}, ready to manage your time?</p>
               </div>
               <div className="flex items-center gap-3">
                 {isManager && (
                   <div className="flex bg-slate-200/50 p-1.5 rounded-2xl">
                     <button
                       onClick={() => setActiveTab('my-requests')}
-                      className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'my-requests' ? 'bg-white shadow-md text-primary-600' : 'text-slate-500 hover:text-slate-900'}`}
+                      className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'my-requests' ? 'bg-white shadow-md text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
                     >
                       My Portal
                     </button>
                     <button
                       onClick={() => setActiveTab('approvals')}
-                      className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'approvals' ? 'bg-white shadow-md text-primary-600' : 'text-slate-500 hover:text-slate-900'}`}
+                      className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'approvals' ? 'bg-white shadow-md text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
                     >
                       Approvals
                     </button>
@@ -261,9 +261,9 @@ function App() {
                       <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 mb-6 group-hover:rotate-12 transition-transform">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                       </div>
-                      <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1 font-display">Leave Balance</h3>
+                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1 font-display">Leave Balance</h3>
                       <p className="text-4xl font-black text-slate-900 leading-none">
-                        {profile?.leaveBalance || 20} <span className="text-base font-bold text-slate-300">Days</span>
+                        {profile?.leaveBalance || 20} <span className="text-base font-bold text-slate-400">Days</span>
                       </p>
                     </div>
                   </div>
@@ -275,9 +275,9 @@ function App() {
                       <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mb-6 group-hover:rotate-12 transition-transform">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                       </div>
-                      <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1 font-display">Approved</h3>
+                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1 font-display">Approved</h3>
                       <p className="text-4xl font-black text-slate-900 leading-none">
-                        {stats.approved} <span className="text-base font-bold text-slate-300">Requests</span>
+                        {stats.approved} <span className="text-base font-bold text-slate-400">Requests</span>
                       </p>
                     </div>
                   </div>
@@ -289,9 +289,9 @@ function App() {
                       <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 mb-6 group-hover:rotate-12 transition-transform">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                       </div>
-                      <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1 font-display">Pending</h3>
+                      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1 font-display">Pending</h3>
                       <p className="text-4xl font-black text-slate-900 leading-none">
-                        {stats.pending} <span className="text-base font-bold text-slate-300">Awaiting</span>
+                        {stats.pending} <span className="text-base font-bold text-slate-400">Awaiting</span>
                       </p>
                     </div>
                   </div>
