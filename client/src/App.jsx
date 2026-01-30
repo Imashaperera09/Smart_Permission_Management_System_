@@ -6,6 +6,8 @@ import LeaveRequestList from './components/LeaveRequestList'
 import ManagerApprovalList from './components/ManagerApprovalList'
 import OfficeRulesModal from './components/OfficeRulesModal'
 import MedicalRecords from './components/MedicalRecords'
+import AdminPanel from './components/AdminPanel'
+import AdminAuth from './components/AdminAuth'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -45,18 +47,67 @@ function App() {
     return () => subscription.unsubscribe()
   }, [])
 
+  // No redundant effect needed, logic consolidated in main render
+
   const fetchRoles = async () => {
     try {
       const res = await fetch('http://localhost:5192/api/Profile/roles')
-      if (res.ok) setRoles(await res.json())
-    } catch (err) { console.error('Roles fetch failed', err) }
+      if (res.ok) {
+        setRoles(await res.json())
+      } else {
+        const { data } = await supabase.from('Roles').select('*')
+        if (data) setRoles(data)
+      }
+    } catch (err) {
+      console.error('Roles fetch failed, trying Supabase...', err)
+      const { data } = await supabase.from('Roles').select('*')
+      if (data) setRoles(data)
+    }
   }
 
   const fetchProfile = async (userId) => {
     try {
+      // 1. Try backend first
       const res = await fetch(`http://localhost:5192/api/Profile/${userId}`)
-      if (res.ok) setProfile(await res.json())
-    } catch (err) { console.error('Profile fetch failed', err) }
+      if (res.ok) {
+        const data = await res.json()
+        setProfile(data)
+        if (roles.find(r => r.id === data.roleId)?.name === 'Admin') setView('admin')
+        return
+      }
+
+      // 2. Fallback to direct Supabase if backend fails
+      const { data, error } = await supabase.from('Profiles').select('*').eq('id', userId).single()
+
+      if (data) {
+        setProfile({
+          fullName: data.full_name,
+          roleId: data.role_id,
+          leaveBalance: data.leave_balance
+        })
+        const currentRole = roles.find(r => r.id === data.role_id)?.name
+        if (currentRole === 'Admin') setView('admin')
+      } else if (error && error.code === 'PGRST116') {
+        // 3. Auto-create profile if somehow missing
+        const { data: roleData } = await supabase.from('Roles').select('id').eq('name', 'Employee').single()
+        const { data: newProfile } = await supabase.from('Profiles').insert({
+          id: userId,
+          full_name: session?.user?.email?.split('@')[0] || 'User',
+          leave_balance: 30,
+          role_id: roleData?.id
+        }).select().single()
+
+        if (newProfile) {
+          setProfile({
+            fullName: newProfile.full_name,
+            roleId: newProfile.role_id,
+            leaveBalance: newProfile.leave_balance
+          })
+        }
+      }
+    } catch (err) {
+      console.error('Final Profile fetch fallback fail:', err)
+    }
   }
 
   const fetchStats = async (userId) => {
@@ -94,8 +145,20 @@ function App() {
           ← Back to Landing
         </button>
         <Login />
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
+          <button
+            onClick={() => setView('admin-auth')}
+            className="text-slate-400 hover:text-primary-600 font-bold text-xs uppercase tracking-widest transition-colors"
+          >
+            Administrator Access
+          </button>
+        </div>
       </div>
     )
+  }
+
+  if (view === 'admin-auth') {
+    return <AdminAuth onBack={() => setView('landing')} />
   }
 
   const userRole = roles.find(r => r.id === profile?.roleId)?.name || 'Guest'
@@ -129,12 +192,22 @@ function App() {
                 >
                   Home
                 </button>
-                <button
-                  onClick={() => setView('dashboard')}
-                  className={`text-sm font-bold transition-colors ${view === 'dashboard' ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
-                >
-                  Dashboard
-                </button>
+                {userRole !== 'Admin' && (
+                  <button
+                    onClick={() => setView('dashboard')}
+                    className={`text-sm font-bold transition-colors ${view === 'dashboard' ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
+                  >
+                    My Portal
+                  </button>
+                )}
+                {userRole === 'Admin' && (
+                  <button
+                    onClick={() => setView('admin')}
+                    className={`text-sm font-bold transition-colors ${view === 'admin' ? 'text-primary-600' : 'text-slate-600 hover:text-slate-900'}`}
+                  >
+                    Admin Control
+                  </button>
+                )}
                 <div className="hidden md:flex flex-col items-end border-l pl-6 border-r pr-6">
                   <span className="text-sm font-bold text-slate-900">{profile?.fullName || session.user.email}</span>
                   <span className="text-xs font-medium text-slate-500">{userRole}</span>
@@ -155,6 +228,7 @@ function App() {
         {(view === 'landing' || !session) ? (
           /* Public Landing View */
           <div className="flex flex-col items-center text-center py-20 px-4">
+            {/* ... rest of landing content ... */}
             <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 mb-6 tracking-tight font-display">
               Simplify Your <br /> <span className="text-primary-600">Leave Management</span>
             </h1>
@@ -182,9 +256,15 @@ function App() {
               )}
               <button
                 onClick={() => setShowRules(true)}
-                className="px-10 py-5 bg-white text-slate-900 border border-slate-200 rounded-[1.5rem] font-bold text-lg shadow-sm hover:bg-slate-50 transition-all"
+                className="px-10 py-5 bg-white text-slate-900 border border-slate-200 rounded-[1.5rem] font-bold text-lg shadow-sm hover:bg-slate-50 transition-all font-display"
               >
                 Learn More
+              </button>
+              <button
+                onClick={() => setView('admin-auth')}
+                className="px-10 py-5 bg-slate-900 text-white rounded-[1.5rem] font-bold text-lg shadow-2xl shadow-slate-900/20 hover:bg-slate-800 hover:-translate-y-1 transition-all font-display"
+              >
+                Admin Workspace
               </button>
             </div>
 
@@ -219,8 +299,16 @@ function App() {
               ))}
             </div>
           </div>
+        ) : (profile && userRole === 'Admin' && view !== 'dashboard') ? (
+          /* Authenticated Admin View - Only if explicitly not on dashboard */
+          <AdminPanel />
+        ) : (!profile && session) ? (
+          /* Loading State while profile fetches */
+          <div className="flex flex-col items-center justify-center py-32 px-4 italic text-slate-400 font-bold animate-pulse">
+            Authenticating workspace...
+          </div>
         ) : (
-          /* Authenticated Dashboard View */
+          /* Authenticated Dashboard View (Regular User or Admin in App Mode) */
           <>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
               <div>

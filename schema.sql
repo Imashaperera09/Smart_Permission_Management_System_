@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS public."LeaveTypes" (
 -- LeaveRequests Table
 CREATE TABLE IF NOT EXISTS public."LeaveRequests" (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES public."Profiles"(id) ON DELETE CASCADE,
     leave_type_id UUID NOT NULL REFERENCES public."LeaveTypes"(id),
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS public."LeaveRequests" (
 -- MedicalDocuments Table
 CREATE TABLE IF NOT EXISTS public."MedicalDocuments" (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES public."Profiles"(id) ON DELETE CASCADE,
     document_url TEXT NOT NULL,
     document_name TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -97,10 +97,29 @@ CREATE POLICY "Anyone can view roles" ON public."Roles" FOR SELECT USING (true);
 
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+    target_role_id UUID;
+    role_name TEXT;
 BEGIN
-  INSERT INTO public."Profiles" (id, full_name, leave_balance)
-  VALUES (new.id, new.raw_user_meta_data->>'full_name', 30);
-  RETURN NEW;
+    -- Check if a specific role was requested in metadata, otherwise default to 'Employee'
+    role_name := COALESCE(new.raw_user_meta_data->>'role', 'Employee');
+    
+    -- Get the corresponding role_id
+    SELECT id INTO target_role_id FROM public."Roles" WHERE name = role_name LIMIT 1;
+    
+    -- If role not found, fall back to Employee
+    IF target_role_id IS NULL THEN
+        SELECT id INTO target_role_id FROM public."Roles" WHERE name = 'Employee' LIMIT 1;
+    END IF;
+
+    INSERT INTO public."Profiles" (id, full_name, leave_balance, role_id)
+    VALUES (
+        new.id, 
+        COALESCE(new.raw_user_meta_data->>'full_name', new.email), 
+        30,
+        target_role_id
+    );
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
