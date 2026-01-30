@@ -34,8 +34,10 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Health check endpoint
-app.MapGet("/api/health", () => Results.Ok(new { Status = "Healthy", Runtime = ".NET 8" }));
+// Health check endpoints
+app.MapGet("/", () => "API is Running!");
+app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Version = "1.1" }));
+app.MapGet("/api/health", () => Results.Ok(new { Status = "Healthy", Location = "api/health" }));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -44,7 +46,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// REMOVED app.UseHttpsRedirection() as it causes CORS issues on Render
+Console.WriteLine($"Starting API... Base URL: {supabaseUrl}");
+
+// Explicitly ensure CORS is the very first middleware
 app.UseCors("AllowAll");
 app.UseAuthorization();
 
