@@ -365,7 +365,10 @@ function App() {
                   ← Back to Admin Control
                 </button>
               </div>
-              <LeaveRequestForm />
+              <LeaveRequestForm onComplete={() => {
+                setShowForm(false)
+                setRefreshList(prev => prev + 1)
+              }} />
             </div>
           ) : (
             <AdminPanel />
